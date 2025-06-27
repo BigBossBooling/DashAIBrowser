@@ -1,0 +1,18 @@
+# BUILD.gn for common C++ utilities for ASOL
+
+static_library("network_request_util_lib") {
+  sources = [
+    "network_request_util.cc",
+    "network_request_util.h",
+  ]
+
+  # This library currently has no external dependencies other than C++ standard library.
+  # If it were to use something like libcurl from third_party, it would be added here.
+  # deps = []
+
+  # If other libraries need to include "network_request_util.h",
+  # this target should make its headers public.
+  # Often done by adding "." to public_configs's include_dirs or by
+  # having a default_public_config that does this.
+  # For simplicity, we assume dependent targets can find the header.
+}

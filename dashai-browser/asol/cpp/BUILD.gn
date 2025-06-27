@@ -1,63 +1,89 @@
 # This BUILD.gn file defines how the C++ parts of the ASOL are built.
-# It's assumed this directory is part of the overall GN build process,
-# likely by being added as a subdirectory in a higher-level BUILD.gn file
-# or by being directly referenced from the main browser executable's dependencies.
+# It's assumed this directory is part of the overall GN build process.
 
-# Define a source set or static library for the ASOL C++ components.
-# A source_set is often preferred for intermediate targets as it's more flexible
-# and avoids unnecessary static linking if this code is only used by one final target.
+# The AsolManager might be used by the browser client-side to interact with the gateway.
+# Or, its logic could be entirely server-side within AsolServiceImpl.
+# For now, keeping it as a separate library.
 static_library("asol_cpp_lib") {
   sources = [
-    "asol_manager.cc",
     "asol_manager.h",
+    "asol_manager.cc",
   ]
-
-  # Dependencies:
-  # 1. The generated Protobuf C++ code from //proto:asol_ipc_protos
-  # 2. Standard C++ library (implicitly handled)
-  # 3. Potentially gRPC libraries if gRPC is used for IPC.
-  # 4. Potentially Mojo libraries if Mojo is used for IPC.
   deps = [
-    "//proto:asol_ipc_protos", # Assuming 'proto' is a top-level dir in GN context
-                               # or correctly mapped in .gn paths.
-    # Example if we were using gRPC and it was available in Chromium's third_party:
-    # "//third_party/grpc:grpc++",
-    # Example for base Chromium utilities (paths are illustrative):
-    # "//base",
+    "//proto:asol_ipc_protos", # For message types
+    # If AsolManager becomes a gRPC client:
+    # "//third_party/grpc:grpc++", # Placeholder for actual gRPC dependency in Chromium
   ]
-
-  # Include directories for this target.
-  # This allows #include "asol_manager.h"
-  # Also, it needs to find the generated protobuf headers.
-  # The include path for generated protos depends on how proto_library outputs them
-  # and how the //proto target exposes its headers.
-  # Often, the root of the generated files for a target is added.
-  # We might need to add something like:
-  # include_dirs = [
-  #   ".", // For "asol_manager.h"
-  #   get_path_info("//proto", "target_gen_dir") // To find asol_service.pb.h
-  #                                             // This depends on how proto_library works.
-  # ]
-  # For now, we assume the include path for "proto/asol_service.pb.h" is handled
-  # by the dependency on "//proto:asol_ipc_protos" and appropriate public_configs.
-
-  # If the "proto" directory is not directly under the main chromium src,
-  # we might need to adjust paths or use absolute paths like "//dashai-browser/proto:asol_ipc_protos"
-  # if the GN build is configured to understand "//dashai-browser" as a source root.
-  # For simplicity in this simulation, we assume paths resolve correctly.
-  # The `asol_manager.h` uses `#include "proto/asol_service.pb.h"`. This means
-  # the directory containing `proto` (i.e., `dashai-browser/`) needs to be an include root,
-  # or the `proto_library` needs to configure its public includes such that
-  # `asol_service.pb.h` can be found via `proto/asol_service.pb.h`.
-
-  # A common pattern is for proto_library targets to add their generated directory
-  # to their public_configs's include_dirs.
-  # The target "//proto:asol_ipc_protos" should make "asol_service.pb.h" available.
-  # The include in asol_manager.h is "proto/asol_service.pb.h".
-  # This implies that `dashai-browser/` directory itself is an include path.
-  # Or, the path in the include should be just "asol_service.pb.h" if the
-  # include path is `dashai-browser/proto/` (or the gen dir for it).
-  # This will need careful setup in a real GN integration.
-  # For now, we assume the include "proto/asol_service.pb.h" will work if
-  # `dashai-browser` is a known root for includes.
+  # public_configs, include_dirs etc. would be important here.
+  # For generated proto headers to be found like "proto/asol_service.pb.h",
+  # the include path would need to point to the root `dashai-browser` dir,
+  # or the include statements would need to be adjusted.
+  # For now, assuming `proto_library` makes `asol_service.pb.h` available directly
+  # (e.g. via public_configs in //proto:asol_ipc_protos making its gen dir an include path)
+  # and `asol_manager.h` would use `#include "asol_service.pb.h"`.
+  # The current include in asol_manager.h is "proto/asol_service.pb.h"
+  # which implies `dashai-browser` root is an include dir.
 }
+
+# Service implementation library
+static_library("asol_service_impl_lib") {
+  sources = [
+    "asol_service_impl.h",
+    "asol_service_impl.cc",
+  ]
+  deps = [
+    "//proto:asol_ipc_protos", # For generated service and message types
+    "//asol/adapters/gemini:gemini_text_adapter_lib", # Gemini Adapter dependency
+    # "//asol/cpp/utils:network_request_util_lib", # Already a dep of gemini_text_adapter_lib
+    "//third_party/grpc:grpc++", # Placeholder for actual gRPC dependency in Chromium
+                                 # This would provide <grpcpp/grpcpp.h> etc.
+  ]
+  # Include path considerations:
+  # - For "proto/asol_service.grpc.pb.h": Needs `dashai-browser` as include root, or adjustment.
+  # - For "asol/adapters/gemini/gemini_text_adapter.h": Needs `dashai-browser` as include root.
+}
+
+# ASOL Gateway Server library
+static_library("asol_gateway_server_lib") {
+  sources = [
+    "asol_gateway_server.h",
+    "asol_gateway_server.cc",
+  ]
+  deps = [
+    ":asol_service_impl_lib",    # Depends on our service implementation
+    "//third_party/grpc:grpc++", # Placeholder for gRPC
+  ]
+}
+
+# Main executable for the ASOL Gateway
+executable("asol_gateway") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    ":asol_gateway_server_lib", # Depends on our server library
+  ]
+  # This executable would need to be deployed and run as a separate process
+  # from the main DashAIBrowser.
+}
+
+# Note on "//third_party/grpc:grpc++":
+# This is a placeholder. The actual GN path to gRPC libraries within Chromium's
+# build system would need to be used. Chromium bundles gRPC, so it will be
+# something like "//third_party/grpc:grpc_unsecure" or similar.
+# For this simulation, we use a generic name.
+# The `proto_library` in `//proto/BUILD.gn` should also correctly depend on
+# the parts of gRPC needed for code generation if it's not automatic.
+#
+# Note on include paths for headers like "proto/..." or "asol/adapters/...":
+# For these paths to work correctly from files within e.g. asol/cpp, the
+# `dashai-browser` directory (which is the parent of `proto`, `asol` etc.)
+# would typically need to be added to the `include_dirs` of the targets,
+# or be a globally recognized source root by the GN build configuration.
+# This detail is crucial for actual compilation.
+# Example for asol_service_impl_lib:
+# include_dirs = [ "//" ] # If dashai-browser is the root of the GN build.
+# Or more likely, paths in includes would be relative from such a root,
+# e.g. #include "asol/adapters/gemini/gemini_text_adapter.h"
+# The current includes like "proto/asol_service.grpc.pb.h" assume that the
+# directory containing "proto" (i.e., dashai-browser) is an include path.
