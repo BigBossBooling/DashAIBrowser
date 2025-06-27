@@ -1,0 +1,78 @@
+# General
+.DS_Store
+*.log
+*.tmp
+*.swp
+
+# Build artifacts
+build/
+**/build/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+
+# C++ specific (e.g., IDE files)
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rust specific (Cargo)
+**/target/
+Cargo.lock
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Documentation specific (e.g., generated docs)
+_build/
+site/
+
+# Test specific
+coverage/
+.coverage
+*.cover
+nosetests.xml
+coverage.xml
+*.prof
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
