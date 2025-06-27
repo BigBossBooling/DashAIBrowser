@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package dashaibrowser.ipc;
+
+option cc_generic_services = true; // Required for C++ gRPC service generation
+// option java_package = "com.dashaibrowser.ipc"; // Example if Java stubs were needed
+// option java_multiple_files = true; // Example for Java
+
+// Represents common error details that can be part of any response.
+message ErrorDetails {
+  int32 error_code = 1;       // Specific error code for the operation
+  string error_message = 2;   // Developer-facing error message
+  string user_facing_message = 3; // Optional user-friendly message
+  // map<string, string> additional_info = 4; // For any other structured error data
+}
+
+// Represents user preferences that can influence AI operations.
+message UserPreferences {
+  enum SummaryLengthPreference {
+    SUMMARY_LENGTH_UNSPECIFIED = 0;
+    SHORT = 1;
+    MEDIUM = 2;
+    LONG = 3;
+  }
+  SummaryLengthPreference summary_length = 1;
+  string preferred_language = 2; // e.g., "en", "es-MX"
+  // Potentially add preferred AI models, tone, etc.
+  // string preferred_summary_model = 3;
+  // string preferred_translation_model = 4;
+}
+
+// Service definition for ASOL, acting as a gateway to various AI functionalities.
+service AsolInterface {
+  // Requests a summary for a given text.
+  rpc GetSummary (SummaryRequest) returns (SummaryResponse);
+
+  // Requests translation for a given text.
+  rpc TranslateText (TranslationRequest) returns (TranslationResponse);
+
+  // Future services could be added here:
+  // rpc AnalyzeImage (ImageAnalysisRequest) returns (ImageAnalysisResponse);
+  // rpc GenerateText (TextGenerationRequest) returns (TextGenerationResponse);
+}
+
+// Message for requesting a text summary.
+message SummaryRequest {
+  string request_id = 1;          // Unique ID to correlate requests and responses.
+  string session_id = 2;          // Optional ID for a user session or context.
+  string original_text = 3;       // The text to be summarized.
+  UserPreferences preferences = 4; // User preferences influencing the summary.
+  // map<string, string> additional_metadata = 5; // For any other request-specific data.
+}
+
+// Message for returning a text summary.
+message SummaryResponse {
+  string request_id = 1;              // Corresponds to the SummaryRequest.request_id.
+  bool success = 2;                   // Indicates if the operation was successful.
+  string summarized_text = 3;         // The generated summary. Only valid if success is true.
+  ErrorDetails error_details = 4;     // Error information if success is false.
+  // map<string, string> diagnostic_info = 5; // For performance metrics, model used, etc.
+}
+
+// Message for requesting text translation.
+message TranslationRequest {
+  string request_id = 1;              // Unique ID.
+  string session_id = 2;              // Optional session ID.
+  string text_to_translate = 3;       // The text to be translated.
+  string source_language_code = 4;    // e.g., "en", "auto" for auto-detect.
+  string target_language_code = 5;    // e.g., "es", "fr".
+  UserPreferences preferences = 6;     // User preferences (e.g., preferred_language might act as target if not specified).
+}
+
+// Message for returning translated text.
+message TranslationResponse {
+  string request_id = 1;              // Corresponds to the TranslationRequest.request_id.
+  bool success = 2;                   // Indicates if the operation was successful.
+  string translated_text = 3;         // The translated text. Only valid if success is true.
+  string detected_source_language = 4; // Language code of the detected source text, if auto-detected.
+  ErrorDetails error_details = 5;     // Error information if success is false.
+}

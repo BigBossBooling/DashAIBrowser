@@ -1,0 +1,61 @@
+import("//third_party/protobuf/proto_library.gni")
+
+# This assumes that the main Chromium checkout (browser_core/chromium/src)
+# has protobuf available as //third_party/protobuf.
+# If DashAIBrowser were to use a different protobuf version or location,
+# this import path and potentially the template would need adjustment.
+
+proto_library("asol_ipc_protos") {
+  sources = [
+    "asol_service.proto",
+  ]
+
+  # This enables generation of C++ gRPC service stubs.
+  # If only messages were needed, this might not be strictly necessary
+  # or could be controlled by a different flag depending on the specific
+  # proto_library.gni implementation in Chromium.
+  # For standard protobuf `protoc` compiler, this often requires plugins.
+  # Chromium's build system might abstract this.
+  # We've added `option cc_generic_services = true;` in the .proto file.
+  generate_cc_services = true
+
+
+  # The following are common parameters, actual names might vary slightly
+  # based on the exact version of proto_library.gni in Chromium M120.
+
+  # Controls whether C++ files are generated. Defaults to true.
+  # generate_cc = true
+
+  # Controls whether Python files are generated. Defaults to false.
+  # generate_py = false
+
+  # Additional options for protoc
+  # protoc_args = [ "--cpp_out=..." ] # Usually handled by the template
+
+  # Dependencies for the generated code, if any (e.g., if importing other .proto files)
+  # deps = [ "//path/to/other_protos" ]
+}
+
+# It's also common in Chromium to see a structure like this for proto compilation,
+# especially if more control or specific tools are needed:
+#
+# import("//tools/protoc_wrapper/protoc_wrapper.gni")
+#
+# protoc_wrapper("cpp_asol_ipc_protos") {
+#   sources = [
+#     "asol_service.proto",
+#   ]
+#   # specific_tool = "protobuf" # or similar
+#   # outputs = [...] # specify .pb.h and .pb.cc files
+#   # proto_deps = [...]
+# }
+#
+# source_set("asol_ipc_protos_lib") {
+#   sources = get_target_outputs(":cpp_asol_ipc_protos")
+#   deps = [ "//third_party/protobuf:protobuf_lite" ] # or :protobuf_full
+# }
+
+# For now, we'll rely on the simpler proto_library, assuming it's
+# configured correctly in the Chromium M120 build environment.
+# If this fails during actual integration, we'd switch to a more explicit
+# protoc_wrapper approach.
