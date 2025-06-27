@@ -1,5 +1,6 @@
 #include "asol/cpp/asol_service_impl.h"
 #include <iostream> // For placeholder logging
+#include <sstream>  // For constructing prompts with history
 
 namespace dashaibrowser {
 namespace asol {
@@ -19,17 +20,18 @@ AsolServiceImpl::~AsolServiceImpl() {
 
 bool AsolServiceImpl::InitializeAdapters() {
     // Create and initialize the Gemini adapter.
-    // In a real application, config would come from a file or environment variables.
-    gemini_adapter_ = std::make_unique<adapters::GeminiTextAdapter>(
-        std::make_unique<utils::PlaceholderHttpClient>() // Inject placeholder HTTP client
-    );
+    // It will default to using CurlHttpClient.
+    gemini_adapter_ = std::make_unique<adapters::GeminiTextAdapter>();
 
     adapters::GeminiAdapterConfig gemini_config;
-    // TODO: Populate gemini_config.api_key from a secure source.
-    // For now, it can be empty for PlaceholderHttpClient.
-    gemini_config.api_key = "YOUR_GEMINI_API_KEY_HERE"; // Placeholder
-    gemini_config.api_endpoint_summarize = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent_summarize_placeholder";
-    gemini_config.api_endpoint_translate = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent_translate_placeholder";
+    // TODO: Populate gemini_config.api_key from a secure source (e.g., env variable, config file).
+    // The key "YOUR_GEMINI_API_KEY_HERE" is a placeholder and will not work.
+    // For testing with the actual CurlHttpClient, a valid key needs to be set here or read from env.
+    gemini_config.api_key = "YOUR_GEMINI_API_KEY_PLACEHOLDER"; // Placeholder, ensure this is clear
+
+    gemini_config.api_endpoint_summarize = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+    gemini_config.api_endpoint_translate = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+    gemini_config.api_endpoint_generate_text = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"; // Using same for general text
 
     if (!gemini_adapter_->Initialize(gemini_config)) {
         std::cerr << "AsolServiceImpl: Failed to initialize GeminiTextAdapter." << std::endl;
@@ -38,7 +40,6 @@ bool AsolServiceImpl::InitializeAdapters() {
         return false;
     }
 
-    // Initialize other adapters here if any.
     adapters_initialized_ = true;
     std::cout << "AsolServiceImpl: AI Adapters initialized successfully." << std::endl;
     return true;
@@ -88,15 +89,15 @@ void AsolServiceImpl::SetError(ipc::ErrorDetails* error_details,
         &adapter_error
     );
 
-    if (adapter_error.error_code() != 0 || summary.empty()) {
+    if (adapter_error.error_code() != 0 || (summary.empty() && adapter_error.error_message().empty())) {
         response->set_success(false);
-        // Copy error details from adapter_error to response->mutable_error_details()
         response->mutable_error_details()->CopyFrom(adapter_error);
-        if (response->error_details().error_message().empty()) { // Ensure some message is there
+        if (response->error_details().error_message().empty()) {
              SetError(response->mutable_error_details(), adapter_error.error_code() == 0 ? 500 : adapter_error.error_code(),
-                     "Adapter failed to produce summary.", "AI service could not complete the request.");
+                     "Adapter failed to produce summary and returned no error message.", "AI service could not complete the request.");
         }
-        std::cerr << "AsolServiceImpl::GetSummary Error from adapter: " << response->error_details().error_message() << std::endl;
+        std::cerr << "AsolServiceImpl::GetSummary Error from adapter: (" << response->error_details().error_code()
+                  << ") " << response->error_details().error_message() << std::endl;
         return ::grpc::Status(::grpc::StatusCode::INTERNAL, response->error_details().error_message());
     }
 
@@ -148,22 +149,20 @@ void AsolServiceImpl::SetError(ipc::ErrorDetails* error_details,
         &adapter_error
     );
 
-    if (adapter_error.error_code() != 0 || translated_text.empty()) {
+    if (adapter_error.error_code() != 0 || (translated_text.empty() && adapter_error.error_message().empty())) {
         response->set_success(false);
         response->mutable_error_details()->CopyFrom(adapter_error);
          if (response->error_details().error_message().empty()) {
              SetError(response->mutable_error_details(), adapter_error.error_code() == 0 ? 500 : adapter_error.error_code(),
-                     "Adapter failed to produce translation.", "AI service could not complete the request.");
+                     "Adapter failed to produce translation and returned no error message.", "AI service could not complete the request.");
         }
-        std::cerr << "AsolServiceImpl::TranslateText Error from adapter: " << response->error_details().error_message() << std::endl;
+        std::cerr << "AsolServiceImpl::TranslateText Error from adapter: (" << response->error_details().error_code()
+                  << ") " << response->error_details().error_message() << std::endl;
         return ::grpc::Status(::grpc::StatusCode::INTERNAL, response->error_details().error_message());
     }
 
     response->set_success(true);
     response->set_translated_text(translated_text);
-    // For placeholder, we assume Gemini doesn't explicitly return detected source lang,
-    // so we'll just pass through what was requested or a default.
-    // A real adapter would populate this if the AI service provides it.
     response->set_detected_source_language(
         request->source_language_code() == "auto" ? "en_simulated_detection" : request->source_language_code()
     );
@@ -173,6 +172,69 @@ void AsolServiceImpl::SetError(ipc::ErrorDetails* error_details,
 
     return ::grpc::Status::OK;
 }
+
+::grpc::Status AsolServiceImpl::ChatWithJules(
+    ::grpc::ServerContext* context,
+    const ipc::ConversationRequest* request,
+    ipc::ConversationResponse* response) {
+
+    std::cout << "AsolServiceImpl::ChatWithJules: Received request ID "
+              << request->request_id() << " for session_id: " << request->session_id()
+              << " User message: \"" << request->user_message().substr(0, 50) << "...\"" << std::endl;
+
+    response->set_request_id(request->request_id());
+    response->set_session_id(request->session_id());
+
+    if (!adapters_initialized_ || !gemini_adapter_) {
+        response->set_success(false);
+        SetError(response->mutable_error_details(), 500, "AI adapter not available.", "Service not properly configured.");
+        return ::grpc::Status(::grpc::StatusCode::INTERNAL, "AI adapter not available.");
+    }
+
+    if (request->user_message().empty()) {
+        response->set_success(false);
+        SetError(response->mutable_error_details(), 1001, "User message is empty.", "Cannot chat with an empty message.");
+        return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "User message is empty.");
+    }
+
+    // Construct prompt for Gemini
+    // TODO: Implement more sophisticated history management and prompt engineering.
+    std::ostringstream prompt_stream;
+    prompt_stream << "You are Jules, a friendly and helpful AI assistant for the DashAIBrowser.\n";
+    for (const auto& history_line : request->history()) {
+        prompt_stream << history_line << "\n"; // Assuming history is already formatted "User: ..." or "Jules: ..."
+    }
+    prompt_stream << "User: " << request->user_message() << "\nJules: ";
+    std::string full_prompt = prompt_stream.str();
+
+    ipc::ErrorDetails adapter_error;
+    std::string jules_reply = gemini_adapter_->GenerateText(
+        full_prompt,
+        request->preferences(),
+        &adapter_error
+    );
+
+    if (adapter_error.error_code() != 0 || (jules_reply.empty() && adapter_error.error_message().empty())) {
+        response->set_success(false);
+        response->mutable_error_details()->CopyFrom(adapter_error);
+        if (response->error_details().error_message().empty()) {
+            SetError(response->mutable_error_details(), adapter_error.error_code() == 0 ? 500 : adapter_error.error_code(),
+                     "Adapter failed to generate text and returned no error message.", "AI service could not complete the request.");
+        }
+        std::cerr << "AsolServiceImpl::ChatWithJules Error from adapter: (" << response->error_details().error_code()
+                  << ") " << response->error_details().error_message() << std::endl;
+        return ::grpc::Status(::grpc::StatusCode::INTERNAL, response->error_details().error_message());
+    }
+
+    response->set_success(true);
+    response->set_jules_response(jules_reply);
+
+    std::cout << "AsolServiceImpl::ChatWithJules: Sending response for ID "
+              << response->request_id() << ", Success: " << response->success() << std::endl;
+
+    return ::grpc::Status::OK;
+}
+
 
 }  // namespace asol
 }  // namespace dashaibrowser

@@ -37,6 +37,9 @@ service AsolInterface {
   // Requests translation for a given text.
   rpc TranslateText (TranslationRequest) returns (TranslationResponse);
 
+  // New RPC for conversational interaction with "Jules"
+  rpc ChatWithJules (ConversationRequest) returns (ConversationResponse);
+
   // Future services could be added here:
   // rpc AnalyzeImage (ImageAnalysisRequest) returns (ImageAnalysisResponse);
   // rpc GenerateText (TextGenerationRequest) returns (TextGenerationResponse);
@@ -77,4 +80,22 @@ message TranslationResponse {
   string translated_text = 3;         // The translated text. Only valid if success is true.
   string detected_source_language = 4; // Language code of the detected source text, if auto-detected.
   ErrorDetails error_details = 5;     // Error information if success is false.
+}
+
+// Message for sending a message to Jules (conversational AI).
+message ConversationRequest {
+  string request_id = 1;                // Unique ID for this specific turn.
+  string session_id = 2;                // ID to maintain conversational context across multiple turns.
+  string user_message = 3;              // The user's current message.
+  repeated string history = 4;          // Optional: previous turns (e.g., "User: Hi", "Jules: Hello!").
+  UserPreferences preferences = 5;       // Optional: user preferences for the conversation.
+}
+
+// Message for receiving a response from Jules.
+message ConversationResponse {
+  string request_id = 1;                // Corresponds to the ConversationRequest.request_id.
+  string session_id = 2;                // Echoes the session_id from the request.
+  bool success = 3;                     // Indicates if the operation was successful.
+  string jules_response = 4;            // Jules's reply. Only valid if success is true.
+  ErrorDetails error_details = 5;       // Error information if success is false.
 }

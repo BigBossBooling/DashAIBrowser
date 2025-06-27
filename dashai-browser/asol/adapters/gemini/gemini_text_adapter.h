@@ -17,6 +17,7 @@ struct GeminiAdapterConfig {
     std::string api_key;
     std::string api_endpoint_summarize;
     std::string api_endpoint_translate;
+    std::string api_endpoint_generate_text; // Endpoint for general text generation
     int timeout_ms = 10000;
 };
 
@@ -40,14 +41,19 @@ public:
         const dashaibrowser::ipc::UserPreferences& prefs,
         dashaibrowser::ipc::ErrorDetails* error_details
     ) = 0;
+
+    // New method for general text generation
+    virtual std::string GenerateText(
+        const std::string& prompt,
+        const dashaibrowser::ipc::UserPreferences& prefs, // UserPreferences might be relevant here too
+        dashaibrowser::ipc::ErrorDetails* error_details
+    ) = 0;
 };
 
 
 // Concrete implementation of the Gemini Text Adapter
 class GeminiTextAdapter : public IGeminiTextAdapter {
 public:
-    // Constructor can optionally take an IHttpClient for testing/mocking.
-    // If nullptr is passed, it will create a default PlaceholderHttpClient.
     explicit GeminiTextAdapter(std::unique_ptr<utils::IHttpClient> http_client = nullptr);
     ~GeminiTextAdapter() override;
 
@@ -67,10 +73,16 @@ public:
         dashaibrowser::ipc::ErrorDetails* error_details
     ) override;
 
+    std::string GenerateText(
+        const std::string& prompt,
+        const dashaibrowser::ipc::UserPreferences& prefs,
+        dashaibrowser::ipc::ErrorDetails* error_details
+    ) override;
+
 private:
     GeminiAdapterConfig config_;
     bool initialized_ = false;
-    std::unique_ptr<utils::IHttpClient> http_client_; // Use the utility interface
+    std::unique_ptr<utils::IHttpClient> http_client_;
 
     void SetError(ipc::ErrorDetails* error_details,
                   int32_t code,

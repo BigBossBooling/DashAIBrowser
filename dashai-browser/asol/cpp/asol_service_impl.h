@@ -11,7 +11,6 @@ namespace asol {
 
 class AsolServiceImpl final : public ipc::AsolInterface::Service {
  public:
-  // Constructor can take dependencies like AI adapters.
   AsolServiceImpl();
   ~AsolServiceImpl() override;
 
@@ -25,20 +24,20 @@ class AsolServiceImpl final : public ipc::AsolInterface::Service {
       const ipc::TranslationRequest* request,
       ipc::TranslationResponse* response) override;
 
+  ::grpc::Status ChatWithJules(
+      ::grpc::ServerContext* context,
+      const ipc::ConversationRequest* request,
+      ipc::ConversationResponse* response) override;
+
  private:
   void SetError(ipc::ErrorDetails* error_details,
                 int32_t code,
                 const std::string& message,
                 const std::string& user_message = "");
 
-  // Member to hold the AI adapter instance(s).
-  // Using the interface type for flexibility.
   std::unique_ptr<adapters::IGeminiTextAdapter> gemini_adapter_;
-  // In a more complex scenario, this might be a map or a factory
-  // to select adapters based on request parameters or configuration.
-  // std::map<std::string, std::unique_ptr<adapters::IAiAdapter>> ai_adapters_;
 
-  bool InitializeAdapters(); // Helper to initialize adapters
+  bool InitializeAdapters();
   bool adapters_initialized_ = false;
 };
 

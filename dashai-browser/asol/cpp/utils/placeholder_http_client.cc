@@ -1,4 +1,4 @@
-#include "asol/cpp/utils/network_request_util.h"
+#include "asol/cpp/utils/placeholder_http_client.h"
 #include <iostream> // For placeholder logging
 
 namespace dashaibrowser {
@@ -30,8 +30,6 @@ HttpResponse PlaceholderHttpClient::Post(const std::string& url,
     response.status_code = 200; // Assume success by default for placeholder
 
     // Simulate different responses based on URL or request body content for basic testing
-    // This logic is similar to the one in GeminiTextAdapter's nested handler,
-    // demonstrating that this utility will be used by adapters.
     if (url.find("summarize") != std::string::npos || url.find("generateContent") != std::string::npos ) {
         if (request_body.find("error_test_network_failure") != std::string::npos) {
             response.status_code = 0; // Simulate network error
@@ -54,8 +52,7 @@ HttpResponse PlaceholderHttpClient::Post(const std::string& url,
             response.body = R"({"candidates": [{"content": {"parts": [{"text": "This is a simulated summary via PlaceholderHttpClient."}]}}]})";
             std::cout << "  -> Simulating successful summary/generation response." << std::endl;
         }
-    } else if (url.find("translate") != std::string::npos) { // Assuming a different endpoint or param for translate
-        // Dummy JSON response for translation
+    } else if (url.find("translate") != std::string::npos) {
         response.body = R"({"candidates": [{"content": {"parts": [{"text": "This is a simulated translation via PlaceholderHttpClient."}]}}]})";
         std::cout << "  -> Simulating successful translation response." << std::endl;
     } else {
