@@ -1,0 +1,17 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Config for nlohmann_json to make its headers available.
+config("nlohmann_json_config") {
+  include_dirs = [ "." ] # Allows #include "nlohmann/json.hpp"
+}
+
+# Source set for the header-only library.
+# This allows other targets to depend on it.
+source_set("nlohmann_json") {
+  public_configs = [ ":nlohmann_json_config" ]
+  # No sources needed as it's header-only.
+  # The json.hpp file is expected to be in this directory (or a subdirectory).
+  # If json.hpp is in a subdirectory like 'include', adjust include_dirs in the config.
+}
