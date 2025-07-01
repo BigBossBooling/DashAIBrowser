@@ -1,0 +1,13 @@
+# Placeholder for Protobuf compilation rules using GN.
+# This will use proto_library() to generate C++ stubs from .proto files
+# that will be added to this directory (e.g., asol_service.proto).
+
+# Example of how it might look later (actual target name and .proto files TBD):
+# import("//third_party/protobuf/proto_library.gni")
+#
+# proto_library("asol_service_proto_cc") {
+#   sources = [
+#     "asol_service.proto",
+#   ]
+#   generate_grpc = true # If gRPC stubs are also needed via Chromium's build integration
+# }

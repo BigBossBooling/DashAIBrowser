@@ -1,0 +1,24 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("gemini_adapter") {
+  sources = [
+    "gemini_text_adapter.cc",
+    "gemini_text_adapter.h",
+    # Other Gemini adapter specific files
+  ]
+
+  deps = [
+    "//base",
+    "//components/feed/core/v2:feed_util", # Example dependency, can be adjusted
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/mojom/base:time",
+    "//third_party/nlohmann_json", # This is the key dependency we're resolving
+    "//asol/proto:proto_messages", # Assuming this will be needed for ASOL
+  ]
+
+  # Additional configs like public_deps, configs etc.
+}
