@@ -1,0 +1,51 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+executable("text_processing_example") {
+  sources = [
+    "text_processing_example.cc",
+  ]
+
+  deps = [
+    "//asol:asol_lib",
+    "//base",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+executable("streaming_example") {
+  sources = [
+    "streaming_example.cc",
+  ]
+
+  deps = [
+    "//asol:asol_lib",
+    "//base",
+    "//base/task",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+executable("config_example") {
+  sources = [
+    "config_example.cc",
+  ]
+
+  deps = [
+    "//asol:asol_lib",
+    "//base",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+group("examples") {
+  deps = [
+    ":text_processing_example",
+    ":streaming_example",
+    ":config_example",
+    # Additional examples will be added here
+  ]
+}
