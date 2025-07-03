@@ -1,0 +1,41 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("core") {
+  sources = [
+    "config_loader.cc",
+    "config_loader.h",
+    "service_manager.cc",
+    "service_manager.h",
+    # Additional core files will be added here
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/nlohmann_json",
+    "//asol/adapters:adapter_interface",
+    "//asol/util:util",
+  ]
+}
+
+# Unit tests for the core components
+source_set("unittests") {
+  testonly = true
+  
+  sources = [
+    "service_manager_unittest.cc",
+  ]
+  
+  deps = [
+    ":core",
+    "//asol/adapters:adapter_interface",
+    "//asol/adapters/gemini:gemini_adapter",
+    "//base",
+    "//testing/gtest",
+    "//testing/gmock",
+    "//third_party/nlohmann_json",
+  ]
+}
