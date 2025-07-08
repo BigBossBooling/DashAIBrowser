@@ -1,0 +1,11 @@
+# Placeholder for ASOL build targets
+# Actual targets (e.g., for asol/core, asol/adapters) will be defined here
+# and in sub-directories like asol/core/BUILD.gn, asol/adapters/BUILD.gn.
+
+# Example of how a group might be defined here later:
+# group("asol") {
+#   deps = [
+#     "core:asol_core_lib",
+#     "adapters:asol_adapters_lib",
+#   ]
+# }

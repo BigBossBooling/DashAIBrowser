@@ -1,0 +1,33 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("openai") {
+  sources = [
+    "openai_service_provider.cc",
+    "openai_service_provider.h",
+    "openai_text_adapter.cc",
+    "openai_text_adapter.h",
+  ]
+
+  deps = [
+    "//asol/core",
+    "//base",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+  sources = [
+    "test/openai_text_adapter_unittest.cc",
+  ]
+
+  deps = [
+    ":openai",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/nlohmann_json",
+  ]
+}

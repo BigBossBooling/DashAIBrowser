@@ -2,50 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
-executable("text_processing_example") {
+executable("multi_adapter_example") {
   sources = [
-    "text_processing_example.cc",
+    "multi_adapter_example.cc",
   ]
 
   deps = [
-    "//asol:asol_lib",
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
     "//base",
-    "//third_party/nlohmann_json",
   ]
 }
 
-executable("streaming_example") {
+executable("cache_example") {
   sources = [
-    "streaming_example.cc",
+    "cache_example.cc",
   ]
 
   deps = [
-    "//asol:asol_lib",
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
     "//base",
-    "//base/task",
-    "//third_party/nlohmann_json",
-  ]
-}
-
-executable("config_example") {
-  sources = [
-    "config_example.cc",
-  ]
-
-  deps = [
-    "//asol:asol_lib",
-    "//base",
-    "//third_party/nlohmann_json",
-  ]
-}
-
-group("examples") {
-  deps = [
-    ":text_processing_example",
-    ":streaming_example",
-    ":config_example",
-    # Additional examples will be added here
   ]
 }

@@ -2,23 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+group("adapters") {
+  deps = [
+    "//asol/adapters/gemini",
+    "//asol/adapters/openai",
+    "//asol/adapters/copilot",
+    "//asol/adapters/claude",
+    ":adapter_factory",
+  ]
+}
 
-source_set("adapter_interface") {
+source_set("adapter_factory") {
   sources = [
-    "adapter_interface.h",
     "adapter_factory.cc",
+    "adapter_factory.h",
   ]
 
   deps = [
+    "//asol/adapters/gemini",
+    "//asol/adapters/openai",
+    "//asol/adapters/copilot",
+    "//asol/adapters/claude",
+    "//asol/core",
     "//base",
   ]
 }
 
-group("adapters") {
+group("tests") {
+  testonly = true
   deps = [
-    ":adapter_interface",
-    "gemini:gemini_adapter",
-    # Additional adapters will be added here
+    "//asol/adapters/gemini:tests",
+    "//asol/adapters/openai:tests",
+    "//asol/adapters/copilot:tests",
+    "//asol/adapters/claude:tests",
   ]
 }
