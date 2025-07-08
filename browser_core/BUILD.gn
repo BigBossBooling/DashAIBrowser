@@ -1,0 +1,145 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# Browser core components
+component("browser_core") {
+  sources = [
+    "browser_ai_integration.cc",
+    "browser_ai_integration.h",
+    "browser_content_handler.cc",
+    "browser_content_handler.h",
+    "browser_features.cc",
+    "browser_features.h",
+  ]
+
+  deps = [
+    ":ai",
+    ":content",
+    ":features",
+    ":ui",
+    "//base",
+    "//ui/views",
+    "//asol/core",
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+  ]
+}
+
+# AI components
+source_set("ai") {
+  sources = [
+    "ai/content_understanding.h",
+    "ai/multimedia_understanding.cc",
+    "ai/multimedia_understanding.h",
+    "ai/smart_suggestions.h",
+    "ai/summarization_service.cc",
+    "ai/summarization_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//asol/core",
+    "//asol/adapters",
+  ]
+}
+
+# Content extraction components
+source_set("content") {
+  sources = [
+    "content/content_extractor.cc",
+    "content/content_extractor.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+# Feature implementations
+source_set("features") {
+  sources = [
+    "features/summarization_feature.cc",
+    "features/summarization_feature.h",
+  ]
+
+  deps = [
+    ":ai",
+    "//base",
+    "//ui/views",
+    "//asol/core",
+  ]
+}
+
+# UI components
+source_set("ui") {
+  sources = [
+    "ui/adaptive_rendering_engine.h",
+    "ui/ai_provider_selector.cc",
+    "ui/ai_provider_selector.h",
+    "ui/ai_settings_page.cc",
+    "ui/ai_settings_page.h",
+    "ui/contextual_manager.h",
+    "ui/memory_palace.h",
+    "ui/predictive_omnibox.h",
+    "ui/semantic_search.h",
+    "ui/summarization_ui.h",
+  ]
+
+  deps = [
+    ":ai",
+    "//base",
+    "//ui/views",
+    "//ui/gfx",
+    "//asol/core",
+    "//asol/adapters",
+  ]
+}
+
+# Example applications
+executable("summarization_example") {
+  sources = [
+    "examples/summarization_example.cc",
+  ]
+
+  deps = [
+    ":browser_core",
+    "//base",
+    "//ui/views",
+    "//asol/core",
+  ]
+}
+
+executable("ai_settings_example") {
+  sources = [
+    "examples/ai_settings_example.cc",
+  ]
+
+  deps = [
+    ":browser_core",
+    ":ui",
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//base",
+  ]
+}
+
+executable("ai_menu_button_example") {
+  sources = [
+    "examples/ai_menu_button_example.cc",
+  ]
+
+  deps = [
+    ":browser_core",
+    ":ui",
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//base",
+    "//ui/views",
+    "//ui/gfx",
+  ]
+}

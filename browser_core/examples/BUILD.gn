@@ -1,0 +1,132 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("ai_settings_example") {
+  sources = [
+    "ai_settings_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core/ui",
+    "//base",
+  ]
+}
+
+executable("ai_menu_button_example") {
+  sources = [
+    "ai_menu_button_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/ui",
+    "//base",
+    "//ui/views",
+    "//ui/gfx",
+  ]
+}
+
+executable("summarization_example") {
+  sources = [
+    "summarization_example.cc",
+  ]
+
+  deps = [
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/features",
+    "//browser_core/ai",
+    "//base",
+    "//ui/views",
+  ]
+}
+
+executable("content_analysis_example") {
+  sources = [
+    "content_analysis_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/content",
+    "//base",
+  ]
+}
+
+executable("predictive_omnibox_example") {
+  sources = [
+    "predictive_omnibox_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/ui",
+    "//browser_core/ai",
+    "//browser_core/engine",
+    "//base",
+  ]
+}
+
+executable("memory_palace_example") {
+  sources = [
+    "memory_palace_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/ui",
+    "//browser_core/ai",
+    "//browser_core/engine",
+    "//base",
+  ]
+}
+
+executable("contextual_manager_example") {
+  sources = [
+    "contextual_manager_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/ui",
+    "//browser_core/ai",
+    "//browser_core/engine",
+    "//base",
+  ]
+}
+
+executable("contextual_manager_example") {
+  sources = [
+    "contextual_manager_example.cc",
+  ]
+
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//browser_core",
+    "//browser_core/ui",
+    "//browser_core/ai",
+    "//browser_core/engine",
+    "//base",
+  ]
+}

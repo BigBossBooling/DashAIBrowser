@@ -1,0 +1,35 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "ai_provider_selector.cc",
+    "ai_provider_selector.h",
+    "ai_settings_page.cc",
+    "ai_settings_page.h",
+    "ai_provider_menu_button.cc",
+    "ai_provider_menu_button.h",
+    "predictive_omnibox.cc",
+    "predictive_omnibox.h",
+    "memory_palace.cc",
+    "memory_palace.h",
+    "adaptive_rendering_engine.cc",
+    "adaptive_rendering_engine.h",
+    "semantic_search.cc",
+    "semantic_search.h",
+    "contextual_manager.cc",
+    "contextual_manager.h",
+  ]
+
+  deps = [
+    "//asol/core",
+    "//asol/adapters",
+    "//base",
+    "//ui/views",
+    "//ui/gfx",
+    "//ui/base",
+    "//browser_core/ai",
+    "//browser_core/engine",
+  ]
+}

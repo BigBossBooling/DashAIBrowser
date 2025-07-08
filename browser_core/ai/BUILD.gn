@@ -1,0 +1,23 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ai") {
+  sources = [
+    "content_understanding.h",
+    "multimedia_understanding.cc",
+    "multimedia_understanding.h",
+    "smart_suggestions.h",
+    "summarization_service.cc",
+    "summarization_service.h",
+    "research_assistant.h",
+    "voice_command_system.h",
+  ]
+
+  deps = [
+    "//asol/core",
+    "//asol/adapters",
+    "//base",
+    "//browser_core/engine",
+  ]
+}
