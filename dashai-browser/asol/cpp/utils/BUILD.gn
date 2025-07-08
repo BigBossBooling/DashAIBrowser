@@ -1,0 +1,40 @@
+# BUILD.gn for common C++ utilities for ASOL
+
+static_library("network_request_util_lib") {
+  sources = [
+    "network_request_util.h", # Defines IHttpClient, HttpResponse
+    "placeholder_http_client.cc", # Implements PlaceholderHttpClient
+    "placeholder_http_client.h",  # Declares PlaceholderHttpClient (will create this)
+    "curl_http_client.cc",      # Implements CurlHttpClient
+    "curl_http_client.h",       # Declares CurlHttpClient
+  ]
+
+  # This library now depends on libcurl.
+  # The actual path to libcurl in a Chromium-based build would be something like:
+  # "//third_party/curl:libcurl" or a system dependency.
+  # For this simulation, we'll use a placeholder.
+  # In a real setup, this would also ensure libcurl headers are available.
+  deps = [
+    "//third_party/curl:libcurl",  # Placeholder for actual libcurl target
+  ]
+
+  # This target needs to make IHttpClient and HttpResponse available.
+  # It also needs to make curl.h available for curl_http_client.cc.
+  # The libcurl dependency should handle making curl headers available to its direct dependents.
+  # If other libraries need to include "network_request_util.h",
+  # this target should make its headers public.
+  public_configs = [ ":network_request_util_public_config" ]
+}
+
+config("network_request_util_public_config") {
+  # This allows other targets that depend on this lib to include "network_request_util.h"
+  # (and potentially the concrete client headers if needed, though usually only interface is public).
+  include_dirs = [ "." ] # Makes headers in this directory available via relative paths.
+}
+
+# Note on libcurl dependency:
+# The sandbox environment must have libcurl development headers and library installed.
+# For example, on Debian/Ubuntu: sudo apt-get install libcurl4-openssl-dev
+# The GN build must then be configured to find and link against it.
+# The placeholder "//third_party/curl:libcurl" assumes it's part of the Chromium checkout's
+# third_party libraries, which is common.

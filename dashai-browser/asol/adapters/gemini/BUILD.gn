@@ -1,0 +1,27 @@
+# BUILD.gn for the Gemini Text Adapter
+
+static_library("gemini_text_adapter_lib") {
+  sources = [
+    "gemini_text_adapter.cc",
+    "gemini_text_adapter.h",
+  ]
+
+  deps = [
+    "//proto:asol_ipc_protos", # For UserPreferences, ErrorDetails messages
+    "//asol/cpp/utils:network_request_util_lib", # For IHttpClient
+  ]
+
+  # public_deps could be used if other components directly include gemini_text_adapter.h
+  # and need its dependencies (like IHttpClient or proto messages)
+  # public_deps = [ "//asol/cpp/utils:network_request_util_lib" ]
+
+
+  # Ensure that code including "gemini_text_adapter.h" can find
+  # "asol/cpp/utils/network_request_util.h" and "proto/asol_service.pb.h"
+  # This might require configuring include_dirs or relying on public_configs
+  # from dependencies.
+  # For now, assuming that the //asol/cpp/utils:network_request_util_lib target
+  # and //proto:asol_ipc_protos target correctly expose their headers.
+  # The include "proto/asol_service.pb.h" implies that the root of the
+  # dashai-browser checkout is an include path for these "external" components.
+}

@@ -1,0 +1,37 @@
+# BUILD.gn for the ASOL gRPC command-line client
+
+executable("asol_client") {
+  sources = [
+    "asol_client_main.cc",
+  ]
+
+  deps = [
+    "//proto:asol_ipc_protos",     # For generated proto and gRPC stub code
+    "//third_party/grpc:grpc++",   # Placeholder for actual gRPC C++ library
+                                   # This provides grpcpp/grpcpp.h etc.
+    # Depending on how gRPC is built/provided, other dependencies might be needed,
+    # e.g., for protobuf runtime, ssl, zlib etc.
+    # "//third_party/protobuf:protobuf_lite", # Example if needed explicitly
+  ]
+
+  # Include path considerations:
+  # - For "proto/asol_service.grpc.pb.h": Needs `dashai-browser` as include root, or adjustment.
+  #   The //proto:asol_ipc_protos target should make its generated headers available.
+  #   If it configures its public_configs to include its gen/ directory directly, then
+  #   the include might just be "asol_service.grpc.pb.h".
+  #   The current client code uses "proto/asol_service.grpc.pb.h", implying
+  #   `dashai-browser` (parent of `proto`) is an include path.
+}
+
+# Note on "//third_party/grpc:grpc++":
+# This is a placeholder. The actual GN path to gRPC C++ libraries within Chromium's
+# build system (if integrating there) or a system/vendored gRPC would be used.
+# It should provide all necessary gRPC runtime libraries for a client.
+#
+# Note on `CurlHttpClient::GlobalInit()`:
+# The client `asol_client_main.cc` currently does not call `CurlHttpClient::GlobalInit()`
+# because the gRPC client stub itself handles network communication, not our CurlHttpClient.
+# `CurlHttpClient::GlobalInit()` is relevant for the *server* (`asol_gateway`) which uses
+# `CurlHttpClient` within its `GeminiTextAdapter`.
+# If the client were to use libcurl for other purposes, then it would need to manage
+# libcurl's global state as well.
