@@ -82,6 +82,9 @@ class ServiceManager {
   
   // Clear the response cache
   void ClearResponseCache();
+  
+  // Get adapter performance metrics for intelligent routing
+  std::vector<std::pair<std::string, double>> GetAdapterPerformanceMetrics() const;
 
  private:
   ServiceManager();
