@@ -85,6 +85,15 @@ class ServiceManager {
   
   // Get adapter performance metrics for intelligent routing
   std::vector<std::pair<std::string, double>> GetAdapterPerformanceMetrics() const;
+  
+  // Enhanced ASOL integration methods
+  void SetAPIGateway(std::unique_ptr<APIGateway> gateway);
+  void SetPrivacyProxy(std::unique_ptr<PrivacyProxy> proxy);
+  void SetEchoSphereBridge(std::unique_ptr<EchoSphereBridge> bridge);
+  void SetWeb3Integration(std::unique_ptr<Web3Integration> web3);
+  void SetEnhancedSecurityManager(std::unique_ptr<EnhancedSecurityManager> security);
+  void SetPerformanceTracker(std::unique_ptr<PerformanceTracker> tracker);
+  void SetMultimodalProcessor(std::unique_ptr<MultimodalProcessor> processor);
 
  private:
   ServiceManager();
@@ -98,6 +107,15 @@ class ServiceManager {
 
   // Response cache for improved performance
   std::unique_ptr<util::ResponseCache> response_cache_;
+  
+  // Enhanced ASOL components
+  std::unique_ptr<APIGateway> api_gateway_;
+  std::unique_ptr<PrivacyProxy> privacy_proxy_;
+  std::unique_ptr<EchoSphereBridge> echosphere_bridge_;
+  std::unique_ptr<Web3Integration> web3_integration_;
+  std::unique_ptr<EnhancedSecurityManager> enhanced_security_manager_;
+  std::unique_ptr<PerformanceTracker> performance_tracker_;
+  std::unique_ptr<MultimodalProcessor> multimodal_processor_;
 
   // Singleton instance
   static ServiceManager* instance_;

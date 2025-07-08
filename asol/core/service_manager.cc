@@ -248,6 +248,27 @@ std::string ServiceManager::FindBestAdapter(const std::string& capability) {
     return "";
   }
   
+  // Use API Gateway for intelligent provider selection if available
+  if (api_gateway_) {
+    AIServiceProvider::AIRequestParams params;
+    params.input_text = capability;
+    params.task_type = AIServiceProvider::TaskType::TEXT_GENERATION;
+    
+    // For synchronous selection, we'll use a simplified approach
+    // In a real implementation, this would be async
+    std::string best_provider;
+    for (const auto& adapter_id : matching_adapters) {
+      api_gateway_->UpdateProviderMetrics(adapter_id, 100.0, true, 0.01);
+    }
+    
+    best_provider = api_gateway_->GetFastestProvider(matching_adapters);
+    if (!best_provider.empty()) {
+      LOG(INFO) << "API Gateway selected adapter: " << best_provider 
+                << " for capability: " << capability;
+      return best_provider;
+    }
+  }
+  
   // Enhanced adapter selection with basic load balancing
   // Prefer adapters that support streaming for better user experience
   for (const auto& adapter_id : matching_adapters) {
@@ -339,6 +360,41 @@ std::vector<std::pair<std::string, double>> ServiceManager::GetAdapterPerformanc
   }
   
   return metrics;
+}
+
+void ServiceManager::SetAPIGateway(std::unique_ptr<APIGateway> gateway) {
+  api_gateway_ = std::move(gateway);
+  LOG(INFO) << "API Gateway integrated with ServiceManager";
+}
+
+void ServiceManager::SetPrivacyProxy(std::unique_ptr<PrivacyProxy> proxy) {
+  privacy_proxy_ = std::move(proxy);
+  LOG(INFO) << "Privacy Proxy integrated with ServiceManager";
+}
+
+void ServiceManager::SetEchoSphereBridge(std::unique_ptr<EchoSphereBridge> bridge) {
+  echosphere_bridge_ = std::move(bridge);
+  LOG(INFO) << "EchoSphere Bridge integrated with ServiceManager";
+}
+
+void ServiceManager::SetWeb3Integration(std::unique_ptr<Web3Integration> web3) {
+  web3_integration_ = std::move(web3);
+  LOG(INFO) << "Web3 Integration integrated with ServiceManager";
+}
+
+void ServiceManager::SetEnhancedSecurityManager(std::unique_ptr<EnhancedSecurityManager> security) {
+  enhanced_security_manager_ = std::move(security);
+  LOG(INFO) << "Enhanced Security Manager integrated with ServiceManager";
+}
+
+void ServiceManager::SetPerformanceTracker(std::unique_ptr<PerformanceTracker> tracker) {
+  performance_tracker_ = std::move(tracker);
+  LOG(INFO) << "Performance Tracker integrated with ServiceManager";
+}
+
+void ServiceManager::SetMultimodalProcessor(std::unique_ptr<MultimodalProcessor> processor) {
+  multimodal_processor_ = std::move(processor);
+  LOG(INFO) << "Multimodal Processor integrated with ServiceManager";
 }
 
 }  // namespace core

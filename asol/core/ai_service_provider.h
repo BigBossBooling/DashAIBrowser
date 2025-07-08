@@ -31,6 +31,9 @@ class AIServiceProvider {
     CODE_GENERATION,
     QUESTION_ANSWERING,
     TRANSLATION,
+    VOICE_ANALYSIS,
+    AUDIO_PROCESSING,
+    MULTIMODAL_INTERACTION,
     CUSTOM
   };
 
@@ -51,6 +54,9 @@ class AIServiceProvider {
     bool supports_code_generation = false;
     bool supports_question_answering = false;
     bool supports_translation = false;
+    bool supports_voice_analysis = false;
+    bool supports_audio_processing = false;
+    bool supports_multimodal_interaction = false;
     bool supports_streaming = false;
     bool supports_context = false;
     std::vector<std::string> supported_languages;

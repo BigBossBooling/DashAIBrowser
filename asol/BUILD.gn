@@ -1,11 +1,48 @@
-# Placeholder for ASOL build targets
-# Actual targets (e.g., for asol/core, asol/adapters) will be defined here
-# and in sub-directories like asol/core/BUILD.gn, asol/adapters/BUILD.gn.
+# ASOL (AI Services Orchestration Layer) build targets
 
-# Example of how a group might be defined here later:
-# group("asol") {
-#   deps = [
-#     "core:asol_core_lib",
-#     "adapters:asol_adapters_lib",
-#   ]
-# }
+group("asol") {
+  deps = [
+    "core:asol_core_lib",
+    "adapters:asol_adapters_lib",
+    "browser:asol_browser_lib",
+  ]
+}
+
+# Core ASOL components
+static_library("asol_core_lib") {
+  sources = [
+    "core/ai_service_manager.cc",
+    "core/ai_service_manager.h",
+    "core/api_gateway.cc",
+    "core/api_gateway.h",
+    "core/asol_integration_manager.cc",
+    "core/asol_integration_manager.h",
+    "core/context_manager.cc",
+    "core/context_manager.h",
+    "core/echosphere_bridge.cc",
+    "core/echosphere_bridge.h",
+    "core/enhanced_security_manager.cc",
+    "core/enhanced_security_manager.h",
+    "core/local_ai_processor.cc",
+    "core/local_ai_processor.h",
+    "core/multimodal_processor.cc",
+    "core/multimodal_processor.h",
+    "core/performance_tracker.cc",
+    "core/performance_tracker.h",
+    "core/multi_adapter_manager.cc",
+    "core/multi_adapter_manager.h",
+    "core/privacy_proxy.cc",
+    "core/privacy_proxy.h",
+    "core/service_manager.cc",
+    "core/service_manager.h",
+    "core/web3_integration.cc",
+    "core/web3_integration.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+    "//services/network/public/cpp",
+    "//third_party/nlohmann_json",
+  ]
+}

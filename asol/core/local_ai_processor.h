@@ -26,8 +26,11 @@ class LocalAIProcessor : public AIServiceProvider {
     TEXT_SMALL,      // Small text model for basic tasks
     TEXT_MEDIUM,     // Medium text model for more complex tasks
     VISION_SMALL,    // Small vision model for basic image analysis
+    VOICE_SMALL,     // Small voice model for speech recognition
+    AUDIO_ANALYSIS,  // Audio analysis model for sound processing
     EMBEDDING,       // Embedding model for text representations
     CLASSIFICATION,  // Classification model for content categorization
+    MULTIMODAL,      // Multimodal model for combined input types
     CUSTOM           // Custom model
   };
 
@@ -83,6 +86,25 @@ class LocalAIProcessor : public AIServiceProvider {
   // Image processing
   void ProcessImage(const std::vector<uint8_t>& image_data,
                   AIResponseCallback callback);
+
+  // Voice processing
+  void ProcessVoice(const std::vector<uint8_t>& audio_data,
+                  AIResponseCallback callback);
+
+  // Audio analysis
+  void ProcessAudio(const std::vector<uint8_t>& audio_data,
+                  AIResponseCallback callback);
+
+  // Multimodal processing
+  void ProcessMultimodal(const std::string& text,
+                       const std::vector<uint8_t>& image_data,
+                       const std::vector<uint8_t>& audio_data,
+                       AIResponseCallback callback);
+
+  // Holographic memory integration
+  void ProcessWithHolographicMemory(const std::string& query,
+                                  const std::string& context,
+                                  AIResponseCallback callback);
 
   // Text embedding
   void GenerateEmbedding(const std::string& text,
