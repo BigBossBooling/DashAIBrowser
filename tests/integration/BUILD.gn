@@ -1,0 +1,33 @@
+# Copyright 2025 The DashAIBrowser Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+test("gemini_adapter_integration_tests") {
+  sources = [
+    "gemini_adapter_integration_test.cc",
+  ]
+  deps = [
+    "//asol/adapters/gemini",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//testing/gmock",
+  ]
+}
+
+test("multi_adapter_integration_tests") {
+  sources = [
+    "multi_adapter_integration_test.cc",
+  ]
+  deps = [
+    "//asol/adapters",
+    "//asol/adapters:adapter_factory",
+    "//asol/core",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//testing/gmock",
+  ]
+}
